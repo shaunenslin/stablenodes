@@ -1,0 +1,213 @@
+//SPDX-License-Identifier: Unlicense
+pragma solidity ^0.8.0;
+
+import "hardhat/console.sol";
+
+contract Greeter {
+    event ContractApproved(uint256 timestamp);
+    event NodeApproved(Node node);
+    event ClaimApproved(Node node);
+    event ClaimAllComplete();
+
+    uint256 public totalNodes;
+    uint256 public yield;
+    uint256 public claimTax;
+    uint256 public claimRotTax;
+    uint256 public nodeFee;
+    uint256 public teamSplit;
+    uint256 public treasurySplit;
+    uint256 public dividendSplit;
+    uint256 public rewardSplit;
+    uint256 public nodeCost;
+    uint256 public nodeCostGwei;
+    uint256 public version = 1;
+
+    // string private greeting;
+    address payable public owner;
+    mapping(address => uint256) private _contractApproved;
+
+    struct Approved {
+        address giver; // The address of the user who buys me a coffee.
+        string approved; // The message the user sent.
+        uint256 timestamp; // The timestamp when the user buys me a coffee.
+    }
+
+    struct Node {
+        string name;
+        uint256 createDate;
+        uint256 lastRewardDate;
+        uint256 rewards;
+    }
+    mapping(address => mapping(string => Node)) private nodes;
+    mapping(address => string[]) private nodeNames;
+
+    constructor() {
+        console.log("Deploying a StableNodes:");
+        yield = 200;
+        claimTax = 15;
+        claimRotTax = 10;
+        teamSplit = 5;
+        treasurySplit = 30;
+        dividendSplit = 2;
+        rewardSplit = 63;
+        nodeCost = 500000000000000000;
+        owner = payable(msg.sender);
+        console.log("Deploying with:", msg.sender);
+    }
+
+    function approveContract() public virtual returns (bool) {
+        _approveContract();
+        return true;
+    }
+
+    /*
+     * Approve and pay for a node
+     */
+    function approveNode(string memory _name)
+        public
+        payable
+        virtual
+        returns (bool)
+    {
+        require(
+            nodes[msg.sender][_name].createDate == 0,
+            "Node name already taken!"
+        );
+        // console.log(msg.value);
+        // console.log(nodeCost);
+        require(msg.value == nodeCost, "Invalid amount to purchase node");
+        console.log("Starting node creation");
+        // add to nodes
+        Node memory newNode = Node(_name, block.timestamp, block.timestamp, 0);
+        nodes[msg.sender][_name] = newNode;
+        // add to nodesNames
+        nodeNames[msg.sender].push(_name);
+        // add to total count
+        totalNodes++;
+        // Split TODO
+
+        // emit
+        emit NodeApproved(newNode);
+        console.log("Node created and emitted");
+        return true;
+    }
+
+    function claimAll() public virtual returns (bool) {
+        console.log("Starting node all claim");
+        for (uint256 i = 0; i < nodeNames[msg.sender].length; i++) {
+            _claim(nodeNames[msg.sender][i]);
+        }
+
+        // emit
+        emit ClaimAllComplete();
+        console.log("Node claimed and emitted");
+        return true;
+    }
+
+    /*
+     * Approve and pay for a node
+     * https://stackoverflow.com/questions/68593044/does-solidity-function-with-payable-modifier-allow-to-perform-msg-sender-call
+     */
+    function claimNode(string memory _name) public virtual returns (bool) {
+        require(nodes[msg.sender][_name].createDate > 0, "Node doesnt exist!");
+        console.log("Starting node claim");
+        _claim(_name);
+        // emit
+        emit ClaimApproved(nodes[msg.sender][_name]);
+        console.log("Node claimed and emitted");
+        return true;
+    }
+
+    function _claim(string memory _name) private returns (bool) {
+        // get number of seconds since last claim
+        uint256 diffSeconds = block.timestamp -
+            nodes[msg.sender][_name].lastRewardDate;
+        uint256 reward = ((nodeCost * (1 + (yield / 100))) / 31536000) *
+            diffSeconds;
+        console.log(
+            "Reward claimed for ",
+            nodeCost,
+            " rate ",
+            (1 + (yield / 100)) / 31536000
+        );
+        console.log("Reward claimed:", reward, " for ", diffSeconds);
+
+        // take off tax
+        uint256 roidays = 365 / (1 + (yield / 100));
+        uint256 diffdays = 0;
+        if (diffSeconds > 86400) {
+            diffdays = diffSeconds / 86400;
+        }
+        uint256 tax = 0;
+        if (diffdays > roidays) {
+            tax = (reward / 100) * claimRotTax; // * (claimRotTax / 100); //10%
+            console.log("tax rot:", tax, " roidays:", roidays);
+        } else {
+            tax = (reward / 100) * claimTax; // * (claimTax / 100); //15%
+            console.log("tax:", tax, " roidays:", roidays);
+        }
+        reward = reward - tax;
+        console.log("Reward after tax:", reward);
+
+        // This forwards all available gas. Be sure to check the return value!
+        address payable receiver = payable(msg.sender);
+        receiver.transfer(reward);
+
+        // reset lastRewardDate
+        nodes[msg.sender][_name].lastRewardDate = block.timestamp;
+        return true;
+    }
+
+    /*
+     * Approve and pay for a node
+     */
+    function getNodesNameCount() public view returns (uint256 count) {
+        return nodeNames[msg.sender].length;
+    }
+
+    function getNodesName(uint256 idx)
+        public
+        view
+        returns (string memory name)
+    {
+        return nodeNames[msg.sender][idx];
+    }
+
+    function getNode(string memory name)
+        public
+        view
+        returns (Node memory _node)
+    {
+        return nodes[msg.sender][name];
+    }
+
+    // so funds not locked in contract forever
+    function destroy() public {
+        if (msg.sender == owner) {
+            selfdestruct(owner); // send funds to organizer
+        }
+    }
+
+    function isContractApproved() public view returns (bool) {
+        return _isContractApproved();
+    }
+
+    function _approveContract() internal virtual {
+        // require(owner != address(0), "ERC20: approve from the zero address");
+        // require(spender != address(0), "ERC20: approve to the zero address");
+
+        //_contractApproved[payable(msg.sender)] = block.timestamp;
+        _contractApproved[msg.sender] = block.timestamp;
+        emit ContractApproved(block.timestamp);
+        console.log(msg.sender.balance / 1000000000000000000); //msg.sender.balance);
+        console.log(_contractApproved[msg.sender]);
+    }
+
+    function _isContractApproved() internal view returns (bool) {
+        if (_contractApproved[msg.sender] > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
