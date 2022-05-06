@@ -3,7 +3,10 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 
-contract Greeter {
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+
+contract StableNodesNFT is ERC721Enumerable {
     event ContractApproved(uint256 timestamp);
     event NodeApproved(Node node);
     event ClaimApproved(Node node);
@@ -41,7 +44,7 @@ contract Greeter {
     mapping(address => mapping(string => Node)) private nodes;
     mapping(address => string[]) private nodeNames;
 
-    constructor() {
+    constructor() ERC721("Stable Nodes NFT", "SNFT") {
         console.log("Deploying a StableNodes:");
         yield = 200;
         claimTax = 15;

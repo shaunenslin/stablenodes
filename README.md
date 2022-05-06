@@ -31,6 +31,19 @@ yarn hardhat node --verbose
 yarn hardhat run scripts/sample-script.js
 ```
 
+### Upgradable
+
+we are writing upgradeble contracts, install hardhat extension
+
+```
+https://www.npmjs.com/package/@openzeppelin/hardhat-upgrades
+```
+
+- Install dependencies  
+- Update hardhat.config  
+- Create a deployproxy.js
+
+
 ## React
 
 ### Setup
