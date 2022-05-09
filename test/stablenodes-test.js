@@ -86,12 +86,42 @@ describe("Box", function () {
     expect(result).to.equal(2);
   });
 
-  it("Check nodesname array", async function () {
+  it("Check tokenOfOwnerByIndex", async function () {
     console.log(addr);
     result = await stableNodesNFT.connect(addr).tokenOfOwnerByIndex(addr, 0);
     expect(result.name).to.equal(0);
 
     result2 = await stableNodesNFT.nodeForToken(result2);
     expect(result2).to.equal("My Node");
+  });
+
+  it("Claim", async function () {
+    const [owner, addr1] = await ethers.getSigners();
+
+    let contractBalance = await hre.ethers.provider.getBalance(
+      stableNodesNFT.address
+    );
+    console.log(
+      "Contract balance:",
+      hre.ethers.utils.formatEther(contractBalance)
+    );
+
+    console.log("Sleeping for 2 seconds");
+    await new Promise((r) => setTimeout(r, 5000));
+
+    console.log("Claim rewards for node");
+    let result = await stableNodesNFT.connect(addr1).claimNode("My Node");
+
+    contractBalance = await hre.ethers.provider.getBalance(
+      stableNodesNFT.address
+    );
+    console.log(
+      "Contract balance:",
+      hre.ethers.utils.formatEther(contractBalance)
+    );
+
+    expect(
+      hre.ethers.utils.formatEther(contractBalance).substring(1, 6)
+    ).to.equal(".9999");
   });
 });
