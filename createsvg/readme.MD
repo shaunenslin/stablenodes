@@ -45,3 +45,6 @@ https://ipfs.io/ipfs/bafyreianemg3ynqcqvevcyeaudefsatdblwbblzcvpofqgpm3vt65eshp4
 https://ipfs.io/ipfs/bafybeibzcaewr5jczy6clhezmdjdlsa6bhgtpchctcbmkyle4ju34qphca/stableNodes_#01.svg
 
 https://ipfs.io/ipfs/bafybeibzcaewr5jczy6clhezmdjdlsa6bhgtpchctcbmkyle4ju34qphca/stableNodes_#01.svg
+
+
+https://ipfs.io/ipfs/bafybeifgr3dvr4ivhm4tm2nvo3lc5bbo3in3jybphu6irtztpd736hwzvq/stableNodesNFT0.svg
