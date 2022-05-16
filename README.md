@@ -43,6 +43,15 @@ https://www.npmjs.com/package/@openzeppelin/hardhat-upgrades
 - Update hardhat.config  
 - Create a deployproxy.js
 
+## NFT images
+
+These are stored in https://nft.storage/
+They are originally created using the scripts in /createsvg which
+
+1. Creates the different SVG's with randomised colors
+2. Uploads to nft.storage which in turn sends to IPFS
+3. Returns the CID to the folder which is then used in the contract
+
 
 ## React
 

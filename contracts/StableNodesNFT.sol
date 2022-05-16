@@ -185,18 +185,6 @@ contract StableNodesNFT is
         _tokenURIs[tokenId] = _tokenURI;
     }
 
-    // // You could also just upload the raw SVG and have solildity convert it!
-    // // tokenOfOwnerByIndex
-    // // _balances
-    // function svgToImageURI() private returns (string memory) {
-    //     string memory svg = getSVG();
-    //     string memory baseURL = "data:image/svg+xml;base64,";
-    //     string memory svgBase64Encoded = Base64.encode(
-    //         bytes(string(abi.encodePacked(svg)))
-    //     );
-    //     return string(abi.encodePacked(baseURL, svgBase64Encoded));
-    // }
-
     function formatTokenURI(string memory imageURI)
         public
         pure
@@ -219,5 +207,74 @@ contract StableNodesNFT is
                     )
                 )
             );
+    }
+
+    // function claimAll() public virtual returns (bool) {
+    //     console.log("Starting node all claim");
+    //     for (uint256 i = 0; i < nodeNames[msg.sender].length; i++) {
+    //         _claim(nodeNames[msg.sender][i]);
+    //     }
+
+    //     // emit
+    //     emit ClaimAllComplete();
+    //     console.log("Node claimed and emitted");
+    //     return true;
+    // }
+
+    /*
+     * Approve and pay for a node
+     * https://stackoverflow.com/questions/68593044/does-solidity-function-with-payable-modifier-allow-to-perform-msg-sender-call
+     */
+    function claimNode(uint256 idx) public virtual returns (bool) {
+        //
+        uint256 token = tokenOfOwnerByIndex(msg.sender, idx);
+        Node memory node = nodeForToken(token);
+        require(node.createDate > 0, "Node doesnt exist!");
+
+        console.log("Starting node claim");
+        _claim(node, idx);
+        // emit
+        emit ClaimApproved(node);
+        console.log("Node claimed and emitted");
+        return true;
+    }
+
+    function _claim(Node memory node, uint256 idx) private returns (bool) {
+        // get number of seconds since last claim
+        uint256 diffSeconds = block.timestamp - node.lastRewardDate;
+        uint256 reward = ((nodeCost * (1 + (yield / 100))) / 31536000) *
+            diffSeconds;
+        console.log(
+            "Reward claimed for ",
+            nodeCost,
+            " rate ",
+            (1 + (yield / 100)) / 31536000
+        );
+        console.log("Reward claimed:", reward, " for ", diffSeconds);
+
+        // take off tax
+        uint256 roidays = 365 / (1 + (yield / 100));
+        uint256 diffdays = 0;
+        if (diffSeconds > 86400) {
+            diffdays = diffSeconds / 86400;
+        }
+        uint256 tax = 0;
+        if (diffdays > roidays) {
+            tax = (reward / 100) * claimRotTax; // * (claimRotTax / 100); //10%
+            console.log("tax rot:", tax, " roidays:", roidays);
+        } else {
+            tax = (reward / 100) * claimTax; // * (claimTax / 100); //15%
+            console.log("tax:", tax, " roidays:", roidays);
+        }
+        reward = reward - tax;
+        console.log("Reward after tax:", reward);
+
+        // This forwards all available gas. Be sure to check the return value!
+        address payable receiver = payable(msg.sender);
+        receiver.transfer(reward);
+
+        // reset lastRewardDate
+        nodes[idx].lastRewardDate = block.timestamp;
+        return true;
     }
 }

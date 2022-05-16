@@ -87,7 +87,7 @@ describe("Box", function () {
   });
 
   it("Check tokenOfOwnerByIndex", async function () {
-    console.log(addr.address);
+    // console.log(addr.address);
     result = await stableNodesNFT
       .connect(addr)
       .tokenOfOwnerByIndex(addr.address, 0);
@@ -97,33 +97,27 @@ describe("Box", function () {
     expect(result2.name).to.equal("My Node");
   });
 
-  // it("Claim", async function () {
-  //   const [owner, addr1] = await ethers.getSigners();
-
-  //   let contractBalance = await hre.ethers.provider.getBalance(
-  //     stableNodesNFT.address
-  //   );
-  //   console.log(
-  //     "Contract balance:",
-  //     hre.ethers.utils.formatEther(contractBalance)
-  //   );
-
-  //   console.log("Sleeping for 2 seconds");
-  //   await new Promise((r) => setTimeout(r, 5000));
-
-  //   console.log("Claim rewards for node");
-  //   let result = await stableNodesNFT.connect(addr1).claimNode("My Node");
-
-  //   contractBalance = await hre.ethers.provider.getBalance(
-  //     stableNodesNFT.address
-  //   );
-  //   console.log(
-  //     "Contract balance:",
-  //     hre.ethers.utils.formatEther(contractBalance)
-  //   );
-
-  //   expect(
-  //     hre.ethers.utils.formatEther(contractBalance).substring(1, 6)
-  //   ).to.equal(".9999");
-  // });
+  it("Claim", async function () {
+    let contractBalance = await hre.ethers.provider.getBalance(
+      stableNodesNFT.address
+    );
+    console.log(
+      "Contract balance:",
+      hre.ethers.utils.formatEther(contractBalance)
+    );
+    console.log("Sleeping for 2 seconds");
+    await new Promise((r) => setTimeout(r, 5000));
+    console.log("Claim rewards for node");
+    let result = await stableNodesNFT.connect(addr).claimNode(0);
+    contractBalance = await hre.ethers.provider.getBalance(
+      stableNodesNFT.address
+    );
+    console.log(
+      "Contract balance:",
+      hre.ethers.utils.formatEther(contractBalance)
+    );
+    expect(
+      hre.ethers.utils.formatEther(contractBalance).substring(1, 6)
+    ).to.equal(".9999");
+  });
 });
