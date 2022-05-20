@@ -6,7 +6,7 @@ async function main() {
 
   await stableNodesNFT.deployed();
 
-  console.log("Greeter deployed to:", greeter.address);
+  console.log("stableNodesNFT deployed to:", stableNodesNFT.address);
 }
 
 main()

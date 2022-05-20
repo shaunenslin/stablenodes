@@ -28,7 +28,7 @@ npx hardhat help
 
 ```shell
 yarn hardhat node --verbose
-yarn hardhat run scripts/sample-script.js
+yarn hardhat run scripts/deployecontract.js
 ```
 
 ### Upgradable
