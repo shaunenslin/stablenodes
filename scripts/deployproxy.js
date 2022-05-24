@@ -15,19 +15,20 @@
 // import { upgrades } from "hardhat";
 const { ethers, upgrades } = require("hardhat");
 async function main() {
-  const Box = await ethers.getContractFactory("StableNodesNFT");
+  const StableNodesNFT = await ethers.getContractFactory("StableNodesNFT");
   console.log("Deploying StableNodesNFT...");
-  const box = await upgrades.deployProxy(Box, [], {
+  const stableNodesNFT = await upgrades.deployProxy(StableNodesNFT, [], {
     initializer: "initialize",
   });
+  await stableNodesNFT.deployed();
 
-  console.log(box.address, " StableNodesNFT(proxy) address");
+  console.log(stableNodesNFT.address, " StableNodesNFT(proxy) address");
   console.log(
-    await upgrades.erc1967.getImplementationAddress(box.address),
+    await upgrades.erc1967.getImplementationAddress(stableNodesNFT.address),
     " getImplementationAddress"
   );
   console.log(
-    await upgrades.erc1967.getAdminAddress(box.address),
+    await upgrades.erc1967.getAdminAddress(stableNodesNFT.address),
     " getAdminAddress"
   );
 }

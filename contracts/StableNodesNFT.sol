@@ -131,6 +131,8 @@ contract StableNodesNFT is
      * Approve and pay for a node
      */
     function mintNode(string memory _name) public payable virtual {
+        console.log("Nodecost>", nodeCost);
+        console.log(msg.value);
         require(msg.value == nodeCost, "Invalid amount to purchase node");
         // mint NFT
         uint256 newItemId = _tokenIdCounter.current();
