@@ -28,8 +28,20 @@ npx hardhat help
 
 ```shell
 yarn hardhat node --verbose
-yarn hardhat run scripts/deployecontract.js
+yarn hardhat run scripts/deployecontract.js --network localhost  
 ```
+
+## Test  
+
+```shell
+yarn hardhat console
+```
+
+```console
+address = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+contract = await ethers.getContractAt("StableNodesNFT", address)
+await contract.getCost()
+```  
 
 ### Upgradable
 
