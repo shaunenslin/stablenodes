@@ -229,8 +229,8 @@ contract StableNodesNFT is
      */
     function claimNode(uint256 idx) public virtual returns (bool) {
         //
-        uint256 token = tokenOfOwnerByIndex(msg.sender, idx);
-        Node memory node = nodeForToken(token);
+        // uint256 token = tokenOfOwnerByIndex(msg.sender, idx);
+        Node memory node = nodeForToken(idx);
         require(node.createDate > 0, "Node doesnt exist!");
 
         console.log("Starting node claim");
