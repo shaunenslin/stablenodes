@@ -1,6 +1,6 @@
 # Basic Sample Hardhat Project
 
-## Hardhat  
+## Hardhat
 
 ```bash
 mdkir stablenodes
@@ -28,20 +28,22 @@ npx hardhat help
 
 ```shell
 yarn hardhat node --verbose
-yarn hardhat run scripts/deployecontract.js --network localhost  
+yarn hardhat run scripts/deploycontract.js --network localhost
 ```
 
-## Test  
+## Test
 
 ```shell
 yarn hardhat console
 ```
 
 ```console
+contract = await ethers.getContractAt("StableNodesNFT", "0x5FbDB2315678afecb367f032d93F642f64180aa3")
+
 address = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
 contract = await ethers.getContractAt("StableNodesNFT", address)
 await contract.getCost()
-```  
+```
 
 ### Upgradable
 
@@ -51,8 +53,8 @@ we are writing upgradeble contracts, install hardhat extension
 https://www.npmjs.com/package/@openzeppelin/hardhat-upgrades
 ```
 
-- Install dependencies  
-- Update hardhat.config  
+- Install dependencies
+- Update hardhat.config
 - Create a deployproxy.js
 
 ## NFT images
@@ -64,6 +66,9 @@ They are originally created using the scripts in /createsvg which
 2. Uploads to nft.storage which in turn sends to IPFS
 3. Returns the CID to the folder which is then used in the contract
 
+## Metamask
+
+https://support.chainstack.com/hc/en-us/articles/4408642503449-Using-MetaMask-with-a-Hardhat-node
 
 ## React
 
@@ -78,4 +83,4 @@ yarn
 # TODO
 
 1. On purchase, send funds to rewards/dev/team/dividend wallet
-2. 
+2.
